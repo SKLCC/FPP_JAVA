@@ -1,8 +1,10 @@
 package com.sklcc.fpp.nets.phps;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -10,6 +12,7 @@ import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.sklcc.fpp.newBoot;
 import com.sklcc.fpp.comps.AbstractConnector;
 import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.nodes.NodeConnector;
@@ -23,11 +26,11 @@ import com.sklcc.fpp.utils.threads.ThreadsPool;
  * 
  */
 public class PHPConnector extends AbstractConnector {
-    private static Logger logger = LogManager.getLogger(PHPConnector.class
-            .getSimpleName());
-    private ServerSocket serverSocket = null;
-    private ThreadPoolExecutor threadsPool = null;
-    private Socket client = null;
+    private static Logger      logger       = LogManager.getLogger(PHPConnector.class
+                                                                                     .getSimpleName());
+    private ServerSocket       serverSocket = null;
+    private ThreadPoolExecutor threadsPool  = null;
+    private Socket             client       = null;
 
     public void receiveMessage(Message message) {
         // TODO Auto-generated method stub
@@ -74,7 +77,7 @@ public class PHPConnector extends AbstractConnector {
                         client = serverSocket.accept();
                         logger.info("new comer:" + client.getInetAddress());
                         threadsPool.execute(new acceptRunable(client,
-                                phpConnector));
+                                                              phpConnector));
                     } catch (Exception e) {
                         // ----------------
                     }
@@ -87,7 +90,7 @@ public class PHPConnector extends AbstractConnector {
     }
 
     class acceptRunable implements Runnable {
-        private Socket cSocket = null;
+        private Socket       cSocket      = null;
         private PHPConnector phpConnector = null;
 
         public acceptRunable(Socket cSocket, PHPConnector phpConnector) {
@@ -117,7 +120,7 @@ public class PHPConnector extends AbstractConnector {
         }
 
         public void run() {
-            // System.out.println("yes");
+            System.out.println("yes");
             String string = null;
             StringBuilder strings = new StringBuilder();
             LinkedList<String> columnValues = new LinkedList<String>();
@@ -125,8 +128,9 @@ public class PHPConnector extends AbstractConnector {
             message.setTargetID(NodeConnector.class.getSimpleName());
             try {
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(cSocket.getInputStream()));
-
+                                                           new InputStreamReader(cSocket.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(
+                                                           new OutputStreamWriter(cSocket.getOutputStream()));
                 while ((string = reader.readLine()) != null) {
                     System.out.println(string);
                     String[] strs = string.split("\\$");
@@ -136,7 +140,7 @@ public class PHPConnector extends AbstractConnector {
                         String[] nums = item.split("\\+");
                         temp = nums[0];
                         String crcStr = GenerateCrc.geneCRC((nums[1].substring(
-                                0, nums[1].length() - 1)));
+                                                                               0, nums[1].length() - 1)));
                         if (temp.length() < 1) {
                             columnValues = MySQLManager.getColumnValues("name");
                             // get all values of one column
@@ -154,7 +158,8 @@ public class PHPConnector extends AbstractConnector {
                         }
 
                     }
-
+                    writer.write("receieve success!");
+                    writer.flush();
                 }
                 logger.info("Receive settings from the web successfully!");
 
@@ -162,8 +167,7 @@ public class PHPConnector extends AbstractConnector {
                 logger.debug("php receive: " + strings.toString());
                 message.setMessageStr(strings.toString());
                 phpConnector.sendMessage(message);
-                // System.out.println(strings.toString());
-
+//                 System.out.println(strings.toString());
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

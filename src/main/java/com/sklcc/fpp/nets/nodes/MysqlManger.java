@@ -411,8 +411,8 @@ public class MysqlManger {
         try {
             connection = mySQLPool.getConnection();
             preparedStatement = connection
-                    .prepareStatement("update fpp_set_data set heart_beat = ?,switch = ?,checked_times = ?,"
-                            +"checked_clock = ?" +" where ID = ?");
+                    .prepareStatement("update fpp_node set heart_beat_interval = ?,switch = ?,checked_times = ?,"
+                            +"check_clock = ?" +" where name = ?");
             preparedStatement.setInt(1, heartBeat);
             preparedStatement.setString(2,binarySwitch );
             preparedStatement.setInt(3, checked_times);

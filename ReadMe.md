@@ -1,9 +1,1 @@
-#这是一个高度机密且非常牛逼的项目
----
-
-> 所以，在这边，我们仅仅只是告诉你们，这个项目，真的很牛逼。
-
-> > > Soochow University 
-
-
-表示赞同
+This is a project for a company

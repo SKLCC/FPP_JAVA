@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.sklcc.fpp.newBoot;
 import com.sklcc.fpp.comps.AbstractConnector;
 import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.nodes.NodeConnector;
@@ -25,9 +24,9 @@ import com.sklcc.fpp.utils.threads.ThreadsPool;
  * @author john
  * 
  */
+
 public class PHPConnector extends AbstractConnector {
-    private static Logger      logger       = LogManager.getLogger(PHPConnector.class
-                                                                                     .getSimpleName());
+    private static Logger      logger       = LogManager.getLogger(PHPConnector.class.getSimpleName());
     private ServerSocket       serverSocket = null;
     private ThreadPoolExecutor threadsPool  = null;
     private Socket             client       = null;
@@ -120,58 +119,59 @@ public class PHPConnector extends AbstractConnector {
         }
 
         public void run() {
-            System.out.println("yes");
             String string = null;
             StringBuilder strings = new StringBuilder();
             LinkedList<String> columnValues = new LinkedList<String>();
             Message message = new Message(phpConnector);
             message.setTargetID(NodeConnector.class.getSimpleName());
             try {
-                BufferedReader reader = new BufferedReader(
-                                                           new InputStreamReader(cSocket.getInputStream()));
-                BufferedWriter writer = new BufferedWriter(
-                                                           new OutputStreamWriter(cSocket.getOutputStream()));
-                while ((string = reader.readLine()) != null) {
-                    System.out.println(string);
-                    String[] strs = string.split("\\$");
-                    String temp = null;
-                    for (String item : strs) {
-                        item = item.substring(1, item.length());
-                        String[] nums = item.split("\\+");
-                        temp = nums[0];
-                        String crcStr = GenerateCrc.geneCRC((nums[1].substring(
-                                                                               0, nums[1].length() - 1)));
-                        if (temp.length() < 1) {
-                            columnValues = MySQLManager.getColumnValues("name");
-                            // get all values of one column
-                            while (!columnValues.isEmpty()) {
-                                temp = columnValues.pop();
-                                strings.append(temp + "+#" + nums[1]);
-                                strings.insert(strings.length() - 1, crcStr);
-                                strings.append("$");
-                            }
-
-                        } else {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(cSocket.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(cSocket.getOutputStream()));
+                string = reader.readLine();
+                System.out.println(string);
+                String[] strs = string.split("\\$");
+                String temp = null;
+                for (String item : strs) {
+                    item = item.substring(1, item.length());
+                    String[] nums = item.split("\\+");
+                    temp = nums[0];
+                    String crcStr = GenerateCrc.geneCRC((nums[1].substring(
+                                                                           0, nums[1].length() - 1)));
+                    if (temp.length() < 1) {
+                        columnValues = MySQLManager.getColumnValues("name");
+                        // get all values of one column
+                        while (!columnValues.isEmpty()) {
+                            temp = columnValues.pop();
                             strings.append(temp + "+#" + nums[1]);
                             strings.insert(strings.length() - 1, crcStr);
                             strings.append("$");
                         }
 
+                    } else {
+                        strings.append(temp + "+#" + nums[1]);
+                        strings.insert(strings.length() - 1, crcStr);
+                        strings.append("$");
                     }
-                    writer.write("receieve success!");
+                }
+                message.setMessageStr(strings.toString());
+                if (phpConnector.sendMessage(message)) {
+                    writer.write("send to NodeConnector success\n");
+                    logger.info("return to php NodeConnector success");
+                    writer.flush();
+                }
+                else {
+                    writer.write("send to NodeConnector error!\n");
+                    logger.info("return to php NodeConnector error");
                     writer.flush();
                 }
                 logger.info("Receive settings from the web successfully!");
-
-                // strings.setLength(strings.length() - 1);
                 logger.debug("php receive: " + strings.toString());
-                message.setMessageStr(strings.toString());
-                phpConnector.sendMessage(message);
-//                 System.out.println(strings.toString());
+
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
             try {
                 cSocket.close();
             } catch (IOException e) {

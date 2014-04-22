@@ -76,12 +76,12 @@ public class MysqlManger {
                 break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error !" + e.getMessage());
         } finally {
             try {
                 connection.recycle();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             }
         }
         return false;
@@ -120,7 +120,7 @@ public class MysqlManger {
                     }
                     rs.close();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
                 String sql_2 = "INSERT INTO fpp_problem(sid,type,stime,nid) "
                         + "values(?,?,?,?)";
@@ -144,7 +144,7 @@ public class MysqlManger {
             try {
                 connection.recycle();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             }
         }
         return false;
@@ -172,12 +172,12 @@ public class MysqlManger {
                 return false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error !" + e.getMessage());
         } finally {
             try {
                 connection.recycle();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             }
         }
         return false;
@@ -193,10 +193,11 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set name=?"
+                        .prepareStatement("update fpp_node set name=?,trans_state=?"
                                 + " where name = ?");
                 preparedStatement.setString(1, newID);
-                preparedStatement.setString(2, ID);
+                preparedStatement.setInt(2, 3);
+                preparedStatement.setString(3, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug("update ID success");
                     return true;
@@ -205,12 +206,12 @@ public class MysqlManger {
                     return false;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             } finally {
                 try {
                     connection.recycle();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
             }
         } else if (type == '6') { // 设置自检次数
@@ -218,10 +219,11 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set checked_times = ?"
+                        .prepareStatement("update fpp_node set checked_times = ?,trans_state=?"
                                 + " where name = ? ");
                 preparedStatement.setInt(1, chieckTimes);
-                preparedStatement.setString(2, ID);
+                preparedStatement.setInt(2, 3);
+                preparedStatement.setString(3, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug(("插入自检次数成功"));
                     return true;
@@ -230,12 +232,12 @@ public class MysqlManger {
                     return false;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             } finally {
                 try {
                     connection.recycle();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
             }
         } else if (type == '7') { // 设置自检时间
@@ -256,10 +258,11 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set check_clock = ?"
+                        .prepareStatement("update fpp_node set check_clock = ?,trans_state=?"
                                 + " where name = ?");
                 preparedStatement.setString(1, buffer.toString());
-                preparedStatement.setString(2, ID);
+                preparedStatement.setInt(2, 3);
+                preparedStatement.setString(3, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug("set check_clock success");
                     return true;
@@ -269,12 +272,12 @@ public class MysqlManger {
                 }
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             } finally {
                 try {
                     connection.recycle();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
             }
         } else if (type == '1') { // 设置心跳间隔
@@ -283,10 +286,11 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set heart_beat_interval = ?"
+                        .prepareStatement("update fpp_node set heart_beat_interval = ?,trans_state=?"
                                 + " where name = ?");
                 preparedStatement.setInt(1, hertBeat);
-                preparedStatement.setString(2, ID);
+                preparedStatement.setInt(2, 3);
+                preparedStatement.setString(3, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug("update heart success");
                     return true;
@@ -295,12 +299,12 @@ public class MysqlManger {
                     return false;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             } finally {
                 try {
                     connection.recycle();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
             }
         } else if (type == '2') { // 设置IP与PORT
@@ -312,11 +316,12 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set server_ip = ?,server_port = ?"
+                        .prepareStatement("update fpp_node set server_ip = ?,server_port = ?,trans_state=?"
                                 + " where name = ?");
                 preparedStatement.setString(1, ip);
                 preparedStatement.setInt(2, port);
-                preparedStatement.setString(3, ID);
+                preparedStatement.setInt(3, 3);
+                preparedStatement.setString(4, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug("update ip and port success");
                     return true;
@@ -325,12 +330,12 @@ public class MysqlManger {
                     return false;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             } finally {
                 try {
                     connection.recycle();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error("Error !" + e.getMessage());
                 }
             }
 
@@ -348,10 +353,11 @@ public class MysqlManger {
             try {
                 connection = mySQLPool.getConnection();
                 preparedStatement = connection
-                        .prepareStatement("update fpp_node set switch = ?"
+                        .prepareStatement("update fpp_node set switch = ?,trans_state = ?"
                                 + " where name = ?");
                 preparedStatement.setString(1, binarySwitch);
-                preparedStatement.setString(2, ID);
+                preparedStatement.setInt(2, 3);
+                preparedStatement.setString(3, ID);
                 if (preparedStatement.executeUpdate() != 0) {
                     logger.debug("update switch success");
                     return true;
@@ -412,23 +418,22 @@ public class MysqlManger {
             connection = mySQLPool.getConnection();
             preparedStatement = connection
                     .prepareStatement("update fpp_node set heart_beat_interval = ?,switch = ?,checked_times = ?,"
-                            +"check_clock = ?" +" where name = ?");
+                            + "check_clock = ?" + " where name = ?");
             preparedStatement.setInt(1, heartBeat);
-            preparedStatement.setString(2,binarySwitch );
+            preparedStatement.setString(2, binarySwitch);
             preparedStatement.setInt(3, checked_times);
             preparedStatement.setString(4, check_clocks);
             preparedStatement.setString(5, ID);
-            if(preparedStatement.executeUpdate() != 0) {
+            if (preparedStatement.executeUpdate() != 0) {
                 logger.debug("read node params success");
                 return true;
-            }
-            else {
+            } else {
                 logger.debug("read node params failed");
                 return false;
             }
         } catch (SQLException e) {
             logger.debug(e.getMessage());
-        }finally {
+        } finally {
             try {
                 connection.recycle();
             } catch (Exception e) {
@@ -448,24 +453,24 @@ public class MysqlManger {
         DruidPooledConnection connection = null;
         PreparedStatement preparedStatement = null;
         int last_index = recData.indexOf("*");
-        //if.....else....的处理只要是为了防止crc中出现'*'
-        if(recData.charAt(last_index+1) == '\0') {
-            recData = recData.substring(0,recData.indexOf("*")+1);
-        }
-        else {
+        // if.....else....的处理只要是为了防止crc中出现'*'
+        if (recData.charAt(last_index + 1) == '\0') {
+            recData = recData.substring(0, recData.indexOf("*") + 1);
+        } else {
             int count = 0;
-            for (int i = last_index+2; ; i++) {
-                if(recData.charAt(i) == '\0') {
+            for (int i = last_index + 2;; i++) {
+                if (recData.charAt(i) == '\0') {
                     count = i;
                     break;
                 }
             }
-            recData = recData.substring(0,count);
+            recData = recData.substring(0, count);
         }
-        logger.debug("recdata is "+recData);
+        logger.debug("recdata is " + recData);
         int id_length = Integer.valueOf(recData.substring(4, 5));
         String ID = recData.substring(5, 5 + id_length);
-        String msg_type = recData.substring(recData.length()-5,recData.length()-3);
+        String msg_type = recData.substring(recData.length() - 5,
+                recData.length() - 3);
         logger.debug("receive msg_type is: " + ID + "    " + msg_type);
         try {
             connection = mySQLPool.getConnection();
@@ -486,7 +491,7 @@ public class MysqlManger {
             try {
                 connection.recycle();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Error !" + e.getMessage());
             }
         }
         return false;
@@ -514,6 +519,42 @@ public class MysqlManger {
 
         } catch (SQLException e) {
             logger.debug(e.getMessage());
+        }finally {
+            try {
+                connection.recycle();
+            } catch (Exception e) {
+                logger.error("Error !" + e.getMessage());
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * to record the status between nodeConnector and Web
+     */
+    public static boolean writeTransState(String ID) {
+        DruidPooledConnection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = mySQLPool.getConnection();
+            preparedStatement = connection.prepareStatement("update fpp_node set trans_state = ?"
+                    +" where name = ?");
+            preparedStatement.setInt(1, 2);
+            preparedStatement.setString(2, ID);
+            if(preparedStatement.executeUpdate()!=0) {
+                return true;
+            }else {
+                return false;
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            logger.debug(e.getMessage());
+        }finally {
+            try {
+                connection.recycle();
+            } catch (Exception e) {
+                logger.error("Error !" + e.getMessage());
+            }
         }
         return false;
     }

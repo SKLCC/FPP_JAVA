@@ -44,6 +44,10 @@ public class NodeConnector extends AbstractConnector {
             logger.debug("receiveMessage[]: " + receiveMessage[i]);
             String data[] = receiveMessage[i].split("\\+");
             NodeClientRunnable nodeClientRunnable = findClient(data[0]);
+            if(nodeClientRunnable == null) {
+                logger.error("the node is offline,so you can't set");
+                return;   //箱子离线的情况
+            }
             int length = data[1].length();
             int idLengtgh = data[0].length();
             for (int j = 1; j < data.length; j++) {
@@ -82,6 +86,7 @@ public class NodeConnector extends AbstractConnector {
                             break; // 设置成功就跳出循环
                         } else {
                             logger.debug(count + ":  send order to node failed");
+                            MysqlManger.writeTransState(data[0]);
                             count++;
                             if (count == 4) {
                                 logger.debug("has sent three times,but always failed");
@@ -96,7 +101,7 @@ public class NodeConnector extends AbstractConnector {
                         areas.remove(data[0]);
                         logger.info("node removed: "
                                 + nodeClientRunnable.getNodeId());
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                 }
 
@@ -192,6 +197,7 @@ public class NodeConnector extends AbstractConnector {
                         logger.debug("箱子ID" + ":" + ID);
                     } catch (Exception e) {
                         logger.debug("the received message is incorrected");
+                        logger.debug("number error"+e.getMessage());
                         return null;
                     }
 
@@ -211,7 +217,7 @@ public class NodeConnector extends AbstractConnector {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("data formate error:"+e.getMessage());
         }
         return null;
     }
@@ -292,7 +298,7 @@ public class NodeConnector extends AbstractConnector {
 
         public void run() {
             try {
-                serverSocket = new ServerSocket(23);
+                serverSocket = new ServerSocket(9500);
                 logger.info("I am in service");
                 while (true) {
                     try {

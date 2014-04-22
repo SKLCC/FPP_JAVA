@@ -134,7 +134,7 @@ public class NodeClientRunnable implements Runnable {
                
             }
         } catch (Exception e) {
-            logger.debug("nodeclient runable: " + e.getMessage());
+            logger.debug("data formate error:" + e.getMessage());
         }
         logger.info("thread out");
     }

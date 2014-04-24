@@ -33,7 +33,6 @@ public class PHPConnector extends AbstractConnector {
 
     public void receiveMessage(Message message) {
         // TODO Auto-generated method stub
-
     }
 
     public void init() {
@@ -128,7 +127,7 @@ public class PHPConnector extends AbstractConnector {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(cSocket.getInputStream()));
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(cSocket.getOutputStream()));
                 string = reader.readLine();
-                System.out.println(string);
+//                System.out.println(string);
                 String[] strs = string.split("\\$");
                 String temp = null;
                 for (String item : strs) {
@@ -160,7 +159,7 @@ public class PHPConnector extends AbstractConnector {
                     writer.flush();
                 }
                 else {
-                    writer.write("send to NodeConnector error!\n");
+                    writer.write("fail\n");
                     logger.info("return to php NodeConnector error");
                     writer.flush();
                 }

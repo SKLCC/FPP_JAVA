@@ -74,7 +74,7 @@ public class PCConnector extends AbstractConnector {
 
     public void start() {
         PCsTimerTask pCsTimerTask = new PCsTimerTask();
-        // pCsTimerTask.start();
+        pCsTimerTask.start();
         // start the timertask
 
         Thread pcconnecorThread = new Thread(new Runnable() {
@@ -98,7 +98,7 @@ public class PCConnector extends AbstractConnector {
                 }
             }
         });
-        // pcconnecorThread.start();
+        pcconnecorThread.start();
         logger.info("START!");
     }
 
@@ -249,12 +249,14 @@ public class PCConnector extends AbstractConnector {
                     HashMap<String, LinkedList<String>> targets = MySQLManager
                             .getUnsolvedProblem();
                     for (String target : targets.keySet()) {
+                        logger.info("target area: " + target);
                         if (areas.containsKey(target.toLowerCase())) {
                             for (PCClientRunnable pcClientRunnable : areas
                                     .get(target.toLowerCase())) {
                                 for (String order : targets.get(target)) {
                                     try {
                                         pcClientRunnable.sendOrder(order);
+                                        logger.info("send order: " + order + " to " + pcClientRunnable.getPcid());
                                     } catch (IOException e) {
                                         // send failed
                                         logger.warn(target + " : "
@@ -273,7 +275,7 @@ public class PCConnector extends AbstractConnector {
                 }
             };
             timer.schedule(timerTask, 10000, 1000 * 6);
-            // delay 10sec, and redo in 5min
+            // delay 10sec, and redo in 6s
         }
     }
 }

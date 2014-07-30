@@ -238,7 +238,7 @@ public class MySQLManager {
 
             preparedStatement1 = connection1
                     .prepareStatement("select nid, sid, id from fpp_alarm "
-                            + "where gtime is null " + "or etime is null;");
+                            + "where gtime is NULL " + "or etime is NULL;");
             ResultSet resultSet1 = preparedStatement1.executeQuery();
             while (resultSet1.next()) {
                 String nid = resultSet1.getString("nid");
@@ -251,7 +251,9 @@ public class MySQLManager {
                 preparedStatement2.setString(1, nid);
 
                 ResultSet resultSet2 = preparedStatement2.executeQuery();
-                resultSet2.next();
+                if(!resultSet2.next()){
+                    continue;
+                }
                 String name = resultSet2.getString("name");
                 String order = "#" + name + "," + sid + "," + id + "*";
 

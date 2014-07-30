@@ -1,15 +1,11 @@
 package com.sklcc.fpp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.SQLException;
 
-import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.nodes.NodeConnector;
 import com.sklcc.fpp.nets.pcs.PCConnector;
 import com.sklcc.fpp.nets.phps.PHPConnector;
-import com.sklcc.fpp.utils.crc16.GenerateCrc;
 import com.sklcc.fpp.utils.sqls.MySQLPool;
 
 public class BootStrap {

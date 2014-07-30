@@ -95,20 +95,22 @@ public class PCClientRunnable implements Runnable {
                     continue;
                 }
                 logger.debug("type : " + type);
-                switch (type) {
-                    case GET:
-                    case WRONGID:
-                    case HANDLE: {
-                        MySQLManager.writePCData2DB(parseData2ID(recdata), type);
-                        break;
-                    }
-                    // -----------------------
-                    case CREATE:// the last two is the same way
-                    default: {
-                        // ignore such cases
-                        break;
-                    }
-                }
+//                switch (type) {
+//                    case GET:
+//                    case WRONGID:
+//                    case HANDLE: {
+//                        MySQLManager.writePCData2DB(parseData2ID(recdata), type);
+//                        break;
+//                    }
+//                    // -----------------------
+//                    case CREATE:// the last two is the same way
+//                    default: {
+//                        // ignore such cases
+//                        break;
+//                    }
+//                }
+                MySQLManager.writePCData2DB(parseData2ID(recdata), type);
+                
                 recdata = "";
             }
         } catch (IOException e) {

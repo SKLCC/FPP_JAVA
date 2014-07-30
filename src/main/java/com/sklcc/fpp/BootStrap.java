@@ -22,23 +22,23 @@ public class BootStrap {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-//        DefaultContext defaultContext = new DefaultContext();
-//        defaultContext.init();
+        DefaultContext defaultContext = new DefaultContext();
+        defaultContext.init();
 
         PCConnector pcConnector = new PCConnector();
         pcConnector.init();
-//        pcConnector.setContext(defaultContext);
+        pcConnector.setContext(defaultContext);
         pcConnector.start();
 
-//        NodeConnector nodeConnector = new NodeConnector();
-//        nodeConnector.init();
-//        nodeConnector.setContext(defaultContext);
-//        nodeConnector.start();
-//
-//        PHPConnector phpConnector = new PHPConnector();
-//        phpConnector.init();
-//        phpConnector.setContext(defaultContext);
-//        phpConnector.start();
+        NodeConnector nodeConnector = new NodeConnector();
+        nodeConnector.init();
+        nodeConnector.setContext(defaultContext);
+        nodeConnector.start();
+
+        PHPConnector phpConnector = new PHPConnector();
+        phpConnector.init();
+        phpConnector.setContext(defaultContext);
+        phpConnector.start();
         
 //        BufferedReader reader = new BufferedReader(new InputStreamReader(
 //                System.in));

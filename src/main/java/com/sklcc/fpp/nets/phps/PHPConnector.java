@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.sklcc.fpp.comps.AbstractConnector;
 import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.nodes.NodeConnector;
+import com.sklcc.fpp.nets.settings.Settings;
 import com.sklcc.fpp.utils.crc16.GenerateCrc;
 import com.sklcc.fpp.utils.threads.ThreadPoolExecutor;
 import com.sklcc.fpp.utils.threads.ThreadsPool;
@@ -69,7 +70,7 @@ public class PHPConnector extends AbstractConnector {
         public void run() {
             try {
                 System.out.println("Start servering!");
-                serverSocket = new ServerSocket(8777);
+                serverSocket = new ServerSocket(Settings.phpPort);
                 while (true) {
                     try {
                         client = serverSocket.accept();

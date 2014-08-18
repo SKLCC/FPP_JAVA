@@ -15,7 +15,7 @@ import com.sklcc.fpp.utils.crc16.GenerateCrc;
 
 public class ReceiveMessage {
     private static Logger logger = LogManager
-            .getLogger(NodeClientRunnable.class.getCanonicalName());
+            .getLogger(NodeClientRunnable.class.getSimpleName());
     private static NodeConnector nodeConnector;
     private static Socket client = null;
     private HashMap<String, Long> alarms = null;

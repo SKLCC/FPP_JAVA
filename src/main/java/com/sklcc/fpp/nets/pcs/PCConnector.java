@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import com.sklcc.fpp.comps.AbstractConnector;
 import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.nodes.NodeConnector;
+import com.sklcc.fpp.nets.settings.Settings;
 import com.sklcc.fpp.utils.threads.ThreadPoolExecutor;
 import com.sklcc.fpp.utils.threads.ThreadsPool;
 
@@ -80,7 +81,7 @@ public class PCConnector extends AbstractConnector {
         Thread pcconnecorThread = new Thread(new Runnable() {
             public void run() {
                 try {
-                    serverSocket = new ServerSocket(7892);
+                    serverSocket = new ServerSocket(Settings.pcPort);
                     while (true) {
                         try {
                             Socket client = serverSocket.accept();
@@ -249,7 +250,7 @@ public class PCConnector extends AbstractConnector {
                     HashMap<String, LinkedList<String>> targets = MySQLManager
                             .getUnsolvedProblem();
                     for (String target : targets.keySet()) {
-                        logger.info("target area: " + target);
+                        //logger.info("target area: " + target);
                         if (areas.containsKey(target.toLowerCase())) {
                             for (PCClientRunnable pcClientRunnable : areas
                                     .get(target.toLowerCase())) {
@@ -271,7 +272,7 @@ public class PCConnector extends AbstractConnector {
                             }
                         }
                     }
-                    logger.info("timertask finished.");
+                    //logger.info("timertask finished.");
                 }
             };
             timer.schedule(timerTask, 10000, 1000 * 6);

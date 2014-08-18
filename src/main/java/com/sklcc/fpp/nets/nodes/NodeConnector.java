@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import com.sklcc.fpp.comps.AbstractConnector;
 import com.sklcc.fpp.comps.messages.Message;
 import com.sklcc.fpp.nets.phps.PHPConnector;
+import com.sklcc.fpp.nets.settings.Settings;
 import com.sklcc.fpp.utils.crc16.GenerateCrc;
 import com.sklcc.fpp.utils.threads.ThreadPoolExecutor;
 import com.sklcc.fpp.utils.threads.ThreadsPool;
@@ -26,7 +27,7 @@ public class NodeConnector extends AbstractConnector {
     private ThreadPoolExecutor threadsPool = null;
 
     /**
-     * recive the message from the phpconnector
+     * receive the message from the PHPConnector
      * 
      * @return
      */
@@ -188,25 +189,31 @@ public class NodeConnector extends AbstractConnector {
                         continue;
                     }
 
-                    String address = String.valueOf(client.getInetAddress());
-                    logger.debug(address + " : " + data);
-                    String ID = null;
-                    try {
-                        int length = Integer.parseInt(data.substring(4, 5));
-                        ID = data.substring(5, 5 + length);
-                        logger.debug("箱子ID" + ":" + ID);
-                    } catch (Exception e) {
-                        logger.debug("the received message is incorrected");
-                        logger.debug("number error"+e.getMessage());
+                    NodeException myException = new NodeException(data);
+                    if(myException.judgeNodeInfor() == false) {
+                        logger.error("wrong information : " + data);
                         return null;
-                    }
+                    }else {
+                        String address = String.valueOf(client.getInetAddress());
+                        logger.debug(address + " : " + data);
+                        String ID = null;
+                        try {
+                            int length = Integer.parseInt(data.substring(4, 5));
+                            ID = data.substring(5, 5 + length);
+                            logger.debug("箱子ID" + ":" + ID);
+                        } catch (Exception e) {
+                            logger.debug("the received message is incorrected");
+                            logger.debug("number error"+e.getMessage());
+                            return null;
+                        }
 
-                    ReceiveMessage instance = new ReceiveMessage(nodeConnector,
-                            alarms, client);
-                    instance.dealData(data, currentTime);
-                    if (ID != null) {
-                        return ID;
-                    }
+                        ReceiveMessage instance = new ReceiveMessage(nodeConnector,
+                                alarms, client);
+                        instance.dealData(data, currentTime);
+                        if (ID != null) {
+                            return ID;
+                        }
+                    }    
                 }
 
                 if (i > 80) {
@@ -277,7 +284,6 @@ public class NodeConnector extends AbstractConnector {
                     areas.get(nodeid).close();
                     areas.remove(nodeid);
                     this.run(); // 调用方法本身
-
                 }
                 logger.info("new handle thread for : "
                         + nodeClientRunnable.getNodeId());
@@ -298,7 +304,7 @@ public class NodeConnector extends AbstractConnector {
 
         public void run() {
             try {
-                serverSocket = new ServerSocket(9500);
+                serverSocket = new ServerSocket(Settings.nodePort);
                 logger.info("I am in service");
                 while (true) {
                     try {

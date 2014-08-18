@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 public class NodeClientRunnable implements Runnable {
     private static Logger logger = LogManager
-            .getLogger(NodeClientRunnable.class.getCanonicalName());
+            .getLogger(NodeClientRunnable.class.getSimpleName());
 
     private NodeConnector nodeConnector = null;
 
@@ -115,10 +115,17 @@ public class NodeClientRunnable implements Runnable {
                         i = 0;
                     }
                     else {
+//                    	ReceiveNodeMsg instance = new ReceiveNodeMsg(
+//                                nodeConnector, alarms, nodeSocket);
                         ReceiveMessage instance = new ReceiveMessage(
                                 nodeConnector, alarms, nodeSocket);
-                        instance.dealData(recdata, currentTime);
-
+                    	NodeException myException = new NodeException(recdata);
+                    	if (myException.judgeNodeInfor() == true) {
+                            instance.dealData(recdata, currentTime);
+                           
+                        }else {
+                            logger.error("wrong information : " + recdata);
+                        }
                         i = 0;
                     }
                     

@@ -1,5 +1,8 @@
 package com.sklcc.fpp.nets.nettynodes;
 
+import java.util.HashMap;
+import java.util.Set;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -7,9 +10,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-
-import java.util.HashMap;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +27,13 @@ import com.sklcc.fpp.utils.crc16.GenerateCrc;
  */
 
 public class NodeConnector extends AbstractConnector {
-	
+
 	private static Logger logger = LogManager.getLogger(NodeConnector.class
 			.getSimpleName());
 
 	private HashMap<String, ChannelHandlerContext> areas = null;
-	private EventLoopGroup bossGroup = new NioEventLoopGroup();
-	private EventLoopGroup workerGroup = new NioEventLoopGroup();
+	private EventLoopGroup bossGroup = null;
+	private EventLoopGroup workerGroup = null;
 	private ServerBootstrap b = null;
 	private NodeServerInitializer nodeServerInitializer = null;
 
@@ -49,7 +49,6 @@ public class NodeConnector extends AbstractConnector {
 		}
 		int count = 1;
 		String content = message.getMessageStr();
-		areas = this.nodeServerInitializer.getHandler().getareas();
 		String receiveMessage[] = content.split("\\$");
 		for (int i = 0; i < receiveMessage.length; i++) {
 			logger.debug("receiveMessage[]: " + receiveMessage[i]);
@@ -136,7 +135,6 @@ public class NodeConnector extends AbstractConnector {
 		}finally{
 			shutdown();
 		}
-		
 	}
 
 	public void shutdown() {
@@ -147,10 +145,12 @@ public class NodeConnector extends AbstractConnector {
 		areas.clear();
 		this.workerGroup.shutdownGracefully();
 		this.bossGroup.shutdownGracefully();
-		logger.info("NodeServer shutdown!");
+		logger.info("NodeServer Shutdown!");
 	}
 
 	public void initNodeServer() {
+		this.bossGroup = new NioEventLoopGroup();
+		this.workerGroup = new NioEventLoopGroup();
 		try {
 			this.b = new ServerBootstrap();
 			this.nodeServerInitializer = new NodeServerInitializer(this);
@@ -158,11 +158,14 @@ public class NodeConnector extends AbstractConnector {
 					.channel(NioServerSocketChannel.class)
 					.childHandler(this.nodeServerInitializer);
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("NodeServer Init Error: " + e.getMessage());
+			shutdown();
 		}
 	}
 	
-	public ChannelHandlerContext findClient(String ID){
+	public ChannelHandlerContext findClient(String ID) {
+		//每次findClient之前需要更新一下areas
+		areas = this.nodeServerInitializer.getHandler().getareas();
 		Set<String> nodeids = areas.keySet();
 		for(String nodeid: nodeids){
 			if(nodeid.equals(ID)){

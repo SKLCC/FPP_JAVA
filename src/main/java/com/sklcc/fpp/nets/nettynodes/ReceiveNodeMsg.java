@@ -30,11 +30,6 @@ public class ReceiveNodeMsg {
 		this.ctx = ctx;
 	}
 
-	// return client's IP address
-	public String getInetAddress(Socket client) {
-		return String.valueOf(client.getInetAddress());
-	}
-
 	// handle message from Node,use HandleNodemsg()
 	public void dealData(String recdata, long currentTime) {
 		NodeDataType type = defineType(recdata);
@@ -94,7 +89,6 @@ public class ReceiveNodeMsg {
 		return null;
 	}
 
-	// return message to Node(via Socket)
 	public static void sendOrder(String order) {
 		try {
 			byte[] responseByteArray = order.getBytes("UTF-8");
@@ -102,7 +96,7 @@ public class ReceiveNodeMsg {
 			out.writeBytes(responseByteArray);
 			ctx.writeAndFlush(out);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("sendOrder back to node error!");
 		}
 	}
 }

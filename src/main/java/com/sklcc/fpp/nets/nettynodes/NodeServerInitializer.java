@@ -16,8 +16,9 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel>{
 	
 	private NodeServerHandler nodeServerHandler = null;
 	
-	NodeServerInitializer(NodeConnector nodeConnector){
+	public NodeServerInitializer(NodeConnector nodeConnector){
 		this.nodeConnector = nodeConnector;
+		this.nodeServerHandler = new NodeServerHandler(nodeConnector);
 	}
 	
 	public NodeServerHandler getHandler(){
@@ -27,8 +28,7 @@ public class NodeServerInitializer extends ChannelInitializer<SocketChannel>{
 	public void initChannel(SocketChannel ch){
 		try{
 			ChannelPipeline p = ch.pipeline();
-			nodeServerHandler = new NodeServerHandler(nodeConnector);
-			p.addLast(nodeServerHandler);
+			p.addLast(this.nodeServerHandler);
 		}catch(Exception e){
 			logger.debug(e.getMessage());
 		}
